@@ -8,6 +8,7 @@ import tensorflow as tf
 from keras.preprocessing.image import image_utils
 from PIL import Image
 import settings
+import easyocr
 
 class ScreenCaptureAgent:
     def __init__(self) -> None:  
@@ -24,6 +25,7 @@ class ScreenCaptureAgent:
             "height": settings.COMP_VIZ_BOTTOM_RIGHT[1]
         }
         self.model = tf.keras.models.load_model('model_a.h5')
+        self.start_time = time.time()
 
     def capture_screen(self):
         with mss.mss() as sct:
@@ -40,15 +42,16 @@ class ScreenCaptureAgent:
 
                 result = self.model.predict(img_array)
                 if result[0][0] < 0.5:
-                    prediction = 'Cactus'
-                    time.sleep(0.1)
-                    pyautogui.press('up')
-                    time.sleep(0.1)
-                    pyautogui.press('down')
-                else:
-                    prediction = 'Not'
+                    #make it get its own training screenshots xd
+                    screenshot = pyautogui.screenshot(region=(750, 226, 100, 80))
+                    screenshot.save(f'ai\\validation\storage\\a_{result[0][0]}.png')
 
-                #print('Prediction: ', prediction)
+                    elapsed_time = time.time() - self.start_time  
+                    sleep_time = max(0.03 - elapsed_time / 1000, 0.005)  
+                    time.sleep(sleep_time)
+                    pyautogui.press('up')
+                else:
+                    action = 'NOT JUMP'
 
                 # if self.enable_preview:
                 #     preview = cv2.resize(self.img, (0, 0), fx=0.5, fy=0.5)
@@ -56,6 +59,7 @@ class ScreenCaptureAgent:
                 #     if cv2.waitKey(25) & 0xFF == ord("q"):
                 #         cv2.destroyAllWindows()
                 #         break
+
 if __name__ == "__main__":
     agent = ScreenCaptureAgent()
     agent.capture_screen()

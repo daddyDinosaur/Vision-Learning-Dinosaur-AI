@@ -4,7 +4,7 @@ import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 import os
 
-img = Image.open('ai\\validation\class1\\a_64.png')
+img = Image.open('ai\\validation\class1\\a_1.4378993000718765e-05.png')
 img = img.resize((80, 100))
 
 img = np.array(img) / 255.0
